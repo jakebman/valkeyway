@@ -1,6 +1,13 @@
 # Build stage
 FROM docker.io/eclipse-temurin:25-jdk-alpine AS build
 
+# Optional additional CA cert: the glob pattern allows this COPY to succeed
+# whether or not the file exists in the build context (for MITM/proxy environments).
+COPY additional-ca.cr[t] /usr/local/share/ca-certificates/valkeyway-additional-ca.crt
+RUN if [ -s /usr/local/share/ca-certificates/valkeyway-additional-ca.crt ]; then \
+      update-ca-certificates; \
+    fi
+
 RUN apk add --no-cache curl
 
 WORKDIR /app
